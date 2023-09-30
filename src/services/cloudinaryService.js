@@ -13,7 +13,7 @@ class CloudinaryService {
   async uploadFile(file) {
     console.log("uploadFile", "CloudinaryAdapter");
 
-    const uploader = this.#uploadSingleVideo(file);
+    const uploader = this.#uploadVideo(file);
 
     const uploadedData = await uploader();
 
@@ -23,20 +23,35 @@ class CloudinaryService {
   async uploadVideo(file) {
     console.log("uploadVideo", "CloudinaryAdapter");
 
-    const uploader = this.#uploadSingleVideo(file, "video");
+    const uploader = this.#uploadVideo(file);
 
     const uploadedData = await uploader();
 
     return uploadedData;
   }
 
-  #uploadSingleVideo(file, resourceType) {
+  async uploadMultipleVideos(files) {
+    console.log("uploadMultipleVideos", "CloudinaryAdapter");
+
+    const uploaders = files.map(file => this.#uploadVideo(file));
+
+    const uploadedData = [];
+
+    for (const uploader of uploaders) {
+      const response = await uploader();
+      uploadedData.push(response);
+    }
+
+    return uploadedData;
+  }
+
+  #uploadVideo(file) {
     return () => {
       return new Promise((resolve, reject) => {
         const upload = cloudinary.uploader.upload_stream(
           {
             folder: process.env.CLOUDINARY_FOLDER,
-            resource_type: resourceType,
+            resource_type: "video",
             chunk_size: 6000000,
 
             eager: [
@@ -45,6 +60,43 @@ class CloudinaryService {
             ],
             eager_async: true,
             raw_convert: "google_speech",
+          },
+          (err, result) => {
+            if (err) {
+              return reject(err);
+            }
+
+            resolve(result);
+          }
+        );
+
+        toStream(file.buffer, 50000).pipe(upload);
+      });
+    };
+  }
+
+  async getFile(publicId, resourceType) {
+    try {
+      console.log("getFile", "CloudinaryAdapter");
+      const response = await cloudinary.api.resource(publicId, {
+        resource_type: resourceType,
+      });
+
+      return response;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message);
+    }
+  }
+
+  #uploadImage(file) {
+    return () => {
+      return new Promise((resolve, reject) => {
+        const upload = cloudinary.uploader.upload_stream(
+          {
+            folder: process.env.CLOUDINARY_FOLDER,
+            resource_type: "image",
+            chunk_size: 6000000,
           },
           (err, result) => {
             if (err) {

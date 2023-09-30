@@ -1,0 +1,18 @@
+Things that will be save in the database
+
+1. asset_id,
+2. public_id,
+3. bytes
+4. url
+5. transcript_url
+6. transcript_public_id
+
+
+
+
+Minor task to DB_HOST
+1. Save multiple videos to cloudinary  - DONE
+2. Save the needed videos details to the database  - DONE
+3. Create an endpoint to get a single video and its transcripts  - DONE
+    a. Parse the transcript file b4 you send it to the frontend  - DONE
+4. Get all Videos  - DONE
