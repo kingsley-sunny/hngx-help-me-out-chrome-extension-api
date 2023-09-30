@@ -1,0 +1,3 @@
+syncDBRelations = () => {};
+
+module.exports = { syncDBRelations };
