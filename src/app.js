@@ -19,7 +19,7 @@ bodyParser.json();
 const cloudinary = new CloudinaryService();
 cloudinary.initializeConfig();
 
-app.use("/upload", route);
+app.use("/uploads", route);
 
 app.use("/videos", videoRoute);
 
