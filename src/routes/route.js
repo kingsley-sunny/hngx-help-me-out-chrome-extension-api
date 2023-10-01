@@ -3,6 +3,7 @@ const { saveVideo, getSingleVideo, getAllVideos } = require("../controllers/cont
 const route = require("express").Router();
 const multer = require("multer");
 const { asyncWrapper } = require("../middlewares/asyncWrapper");
+const { getVideoFromDisk } = require("../controllers/diskController");
 
 const upload = multer({
   fileFilter(req, file, cb) {

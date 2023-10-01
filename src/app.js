@@ -6,9 +6,13 @@ const bodyParser = require("body-parser");
 const { sequelize } = require("./database/database");
 const { default: axios } = require("axios");
 const fs = require("fs/promises");
+const { videoRoute } = require("./routes/diskRoutes");
+const cors = require("cors");
 
 const app = express();
+
 config();
+app.use(cors());
 bodyParser.urlencoded({ extended: true });
 bodyParser.json();
 
@@ -16,6 +20,8 @@ const cloudinary = new CloudinaryService();
 cloudinary.initializeConfig();
 
 app.use("/upload", route);
+
+app.use("/videos", videoRoute);
 
 app.use((error, req, res, next) => {
   res.status(error.status || 500).json({ error: error.message, statusCode: 500 });
