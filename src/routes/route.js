@@ -6,15 +6,15 @@ const { asyncWrapper } = require("../middlewares/asyncWrapper");
 
 const upload = multer({
   fileFilter(req, file, cb) {
-    if (file.mimetype.includes("image/") || file.mimetype.includes("video/")) {
+    if (file.mimetype.includes("video/")) {
       return cb(null, true);
     }
 
-    cb(new Error("Not an image or video file"), false);
+    cb(new Error("Not a video file"), false);
   },
 });
 
-route.post("/", asyncWrapper(upload.array("files")), asyncWrapper(saveVideo));
+route.post("/", asyncWrapper(upload.single("file")), asyncWrapper(saveVideo));
 
 route.get("/", asyncWrapper(getAllVideos));
 

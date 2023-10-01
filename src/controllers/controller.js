@@ -10,26 +10,24 @@ const cloudinary = new CloudinaryService();
 const uploadFiles = async (req, res, next) => {
   const startTime = Date.now();
 
-  const responses = await cloudinary.uploadMultipleVideos(req.files);
+  const response = await cloudinary.uploadVideo(req.file);
 
   const uploads = [];
 
-  for (const response of responses) {
-    const thumbnail = AddThumbnailToCloudinaryVideos(response.secure_url);
+  const thumbnail = AddThumbnailToCloudinaryVideos(response.secure_url);
 
-    const newUpload = new VideoModel({
-      public_id: response.public_id,
-      url: response.secure_url,
-      transcript_url: `${response.public_id}.transcript`,
-      transcript_public_id: `${response.public_id}.transcript`,
-      thumbnail,
-      bytes: response.bytes,
-    });
+  const newUpload = new VideoModel({
+    public_id: response.public_id,
+    url: response.secure_url,
+    transcript_url: `${response.public_id}.transcript`,
+    transcript_public_id: `${response.public_id}.transcript`,
+    thumbnail,
+    bytes: response.bytes,
+  });
 
-    const upload = await newUpload.save();
+  const upload = await newUpload.save();
 
-    uploads.push(upload.dataValues);
-  }
+  uploads.push(upload.dataValues);
 
   const endTime = Date.now();
 
