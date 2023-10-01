@@ -7,9 +7,12 @@ const { sequelize } = require("./database/database");
 const { default: axios } = require("axios");
 const fs = require("fs/promises");
 const { videoRoute } = require("./routes/diskRoutes");
+const cors = require("cors");
 
 const app = express();
+
 config();
+app.use(cors());
 bodyParser.urlencoded({ extended: true });
 bodyParser.json();
 
