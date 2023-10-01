@@ -5,10 +5,14 @@ const fetchAndTransformTranscript = async url => {
 
   try {
     const response = await axios.get(url, { method: "GET" });
+    console.log(
+      "🚀 ~~ file: helpers.js:8 ~~ fetchAndTransformTranscript ~~ response:",
+      response?.data
+    );
 
     const transcripts = [];
 
-    if (!response.data) {
+    if (!response?.data) {
       return transcripts;
     }
 
@@ -23,6 +27,11 @@ const fetchAndTransformTranscript = async url => {
 
     return transcripts;
   } catch (error) {
+    console.log(
+      "🚀 ~~ file: helpers.js:26 ~~ fetchAndTransformTranscript ~~ error:",
+      error.message
+    );
+
     console.log("fetchAndTransformTranscript", error.message);
     return [];
   }

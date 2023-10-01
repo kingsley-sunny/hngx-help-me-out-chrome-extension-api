@@ -4,21 +4,28 @@ const {
 } = require("../helpers/helpers");
 const VideoModel = require("../models/VideoModel");
 const CloudinaryService = require("../services/cloudinaryService");
+const fs = require("fs/promises");
 
 const cloudinary = new CloudinaryService();
 
 const uploadFiles = async (req, res, next) => {
   const startTime = Date.now();
 
+  const file = req.file;
+
   const response = await cloudinary.uploadVideo(req.file);
 
-  const uploads = [];
+  const fileName = `${Date.now()}-${file.originalname}`;
+
+  await fs.writeFile(`./uploads/${fileName}`, file.buffer);
 
   const thumbnail = AddThumbnailToCloudinaryVideos(response.secure_url);
 
+  const diskStorageUrl = `${req.protocol}://${req.header("host")}/videos/${fileName}`;
+
   const newUpload = new VideoModel({
     public_id: response.public_id,
-    url: response.secure_url,
+    url: diskStorageUrl || response.secure_url,
     transcript_url: `${response.public_id}.transcript`,
     transcript_public_id: `${response.public_id}.transcript`,
     thumbnail,
@@ -26,8 +33,6 @@ const uploadFiles = async (req, res, next) => {
   });
 
   const upload = await newUpload.save();
-
-  uploads.push(upload.dataValues);
 
   const endTime = Date.now();
 
@@ -38,7 +43,7 @@ const uploadFiles = async (req, res, next) => {
     timeTakenInSeconds
   );
 
-  res.json({ message: "Success", data: uploads });
+  res.json({ message: "Success", data: upload });
 };
 
 const getSingleVideo = async (req, res, next) => {
@@ -65,7 +70,9 @@ const getSingleVideo = async (req, res, next) => {
 const getAllVideos = async (req, res, next) => {
   console.log("getAllVideos", "Controller");
 
-  const videos = await VideoModel.findAll();
+  const videos = await VideoModel.findAll({
+    order: [["updatedAt", "DESC"]],
+  });
 
   return res.json({ message: "Success", data: videos });
 };
