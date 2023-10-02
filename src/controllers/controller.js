@@ -15,7 +15,7 @@ const uploadFiles = async (req, res, next) => {
 
   const response = await cloudinary.uploadVideo(req.file);
 
-  const fileName = `${Date.now()}-${file.originalname}`;
+  const fileName = `${Date.now()}-${Date.now().toString(36)}.mp4`;
 
   await fs.writeFile(`./uploads/${fileName}`, file.buffer);
 
